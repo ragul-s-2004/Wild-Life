@@ -5,12 +5,14 @@ import com.example.demo.entity.AnimalEvent;
 import com.example.demo.entity.SpeciesStatus;
 import com.example.demo.repository.AnimalEventRepository;
 import com.example.demo.service.AnimalEventService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/api/ai")
+@RequestMapping("/api/events")
+@CrossOrigin
 public class AIEventController {
 
     private final AnimalEventService animalEventService;
@@ -24,16 +26,19 @@ public class AIEventController {
         this.repository = repository;
     }
 
-
-    @GetMapping("/api/events/{id}")
+    // 🔥 GET event by ID (for React View page)
+    @GetMapping("/{id}")
     public AnimalEvent getEventById(@PathVariable Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
     }
 
-
-    @PostMapping("/events")
-    public void receiveEvent(@RequestBody AnimalEventRequest request) {
+    // 🔥 POST from AI dummy / real server
+    @PostMapping
+    public ResponseEntity<?> receiveEvent(
+            @RequestBody AnimalEventRequest request
+    ) {
+        System.out.println("🔥 POST /api/events HIT");
 
         SpeciesStatus status =
                 request.getSpecies().equalsIgnoreCase("endangered")
@@ -49,6 +54,7 @@ public class AIEventController {
                 request.getCamera(),
                 request.getImageBase64()
         );
+
+        return ResponseEntity.ok().build();
     }
 }
-
