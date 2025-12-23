@@ -33,11 +33,15 @@ public class AnimalEventService {
             LocalDateTime detectedAt,
             Integer cameraNumber,
             String imageBase64
-    ){
+    ) {
+        System.out.println("🔥 SAVE EVENT CALLED");
+        System.out.println("Name=" + name);
+        System.out.println("Status=" + speciesStatus);
+        System.out.println("Camera=" + cameraNumber);
 
         String imagePath = saveImage(imageBase64);
 
-        AnimalEvent event =AnimalEvent.builder()
+        AnimalEvent event = AnimalEvent.builder()
                 .name(name)
                 .speciesStatus(speciesStatus)
                 .detectedAt(detectedAt)
@@ -46,15 +50,17 @@ public class AnimalEventService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        AnimalEvent savedEvent = repository.save(event);
+        AnimalEvent saved = repository.save(event);
+
+        System.out.println("✅ SAVED WITH ID = " + saved.getId());
 
         if (speciesStatus == SpeciesStatus.ENDANGERED) {
-            alertService.createAlert(event);
+            alertService.createAlert(saved);
         }
 
-
-        return savedEvent;
+        return saved;
     }
+
 
     public Page<AnimalEvent> getAllEvents(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
